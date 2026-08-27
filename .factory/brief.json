@@ -1,0 +1,12 @@
+{
+  "slug": "api-version-replay",
+  "title": "Version Replay",
+  "territory": "devtools-data",
+  "user": "Engineers maintaining an integration pinned to an older third-party API version who need to test local code against that exact wire contract before upgrading.",
+  "current_workaround": "Change an account-wide API default, expose a temporary internet endpoint, hand-edit fixtures, or defer an upgrade until a dependency catches up.",
+  "smallest_useful_product": "A local CLI that stores redacted HTTP/webhook fixtures with version labels, replays them to localhost, and reports header/body/schema differences by version.",
+  "artifact_class": "cli",
+  "monetization": "one-time",
+  "constraints": "Local-only storage, configurable field redaction, encrypted optional vault, and no provider credentials required.",
+  "state": "RESEARCHED"
+}
