@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://api-version-replay.sociobot.in/sitemap.xml

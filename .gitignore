@@ -1,6 +1,9 @@
+/target/
 node_modules/
-dist/
+/dist/
+/.version-replay/
+/.factory/evidence/
+/graphify-out/
 .env
-*.log
-graphify-out/
 .DS_Store
+*.log

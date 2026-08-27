@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#171a16" />
+    <meta name="description" content="Version Replay privacy policy: local-first fixtures, no telemetry, and limited license verification data." />
+    <title>Privacy — Version Replay</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Version Replay home"><span class="brand-mark" aria-hidden="true">VR↲</span><span>Version Replay</span></a>
+      <nav aria-label="Primary navigation"><a href="/#workflow">Workflow</a><a href="/#pricing">Pricing</a></nav>
+    </header>
+    <main class="legal-main" id="main">
+      <p class="eyebrow">POLICY / LOCAL-FIRST</p>
+      <h1>Privacy</h1>
+      <p class="updated">Effective August 27, 2026</p>
+      <p>Version Replay is designed so webhook fixtures stay on your machine. The CLI has no analytics, telemetry, account system, hosted relay, or automatic fixture upload.</p>
+
+      <h2>Data the CLI stores</h2>
+      <p>The CLI stores its configuration and the fixtures you explicitly capture or import in the vault directory you choose. Redaction is applied before fixture data is written. If you enable encrypted storage, fixture contents are protected with AES-256-GCM using a key derived from your passphrase with Argon2id. The passphrase is not stored.</p>
+
+      <h2>Network access</h2>
+      <p>Replay requests are restricted to loopback hosts such as <code>localhost</code>, <code>127.0.0.1</code>, and <code>::1</code>. The CLI contacts Sociobot only when you explicitly activate a Pro license or when a cached Pro verdict older than 24 hours needs reconciliation. The license token is sent to Sociobot for verification.</p>
+
+      <h2>Website storage</h2>
+      <p>The website stores an optional theme preference and, if you buy or restore Pro, your license token and its cached verdict in browser local storage. The token is removed from the address bar immediately after the checkout return. The JSON comparison demo runs entirely in your browser and does not upload either fixture.</p>
+
+      <h2>Payments and logs</h2>
+      <p>Sociobot/Dodo is the merchant of record and processes checkout and refunds under its own policies. This site has no advertising cookies and no behavioral analytics. Hosting infrastructure may retain short-lived security and request logs such as IP address, requested path, and user agent.</p>
+
+      <h2>Your control</h2>
+      <p>Delete a CLI vault by removing the directory you created. Remove the CLI license with <code>vr license remove</code>. Clear the website’s local storage through your browser settings to remove its license and theme data.</p>
+
+      <h2>Contact</h2>
+      <p>For privacy questions, open an issue in the <a href="https://github.com/B-Divyesh/sf-api-version-replay">Version Replay repository</a> without including real webhook payloads or license tokens.</p>
+    </main>
+    <footer>
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">VR↲</span><span>Version Replay</span></a>
+      <p>Local migration insurance for versioned inbound contracts.</p>
+      <nav aria-label="Legal and project links"><a href="/privacy/" aria-current="page">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-api-version-replay">Source</a></nav>
+    </footer>
+  </body>
+</html>
