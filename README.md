@@ -26,8 +26,8 @@ vr init
 Import two saved webhook envelopes. An envelope may contain `method`, `path`, `headers`, and `body`; a plain JSON document is treated as the body of a `POST /` fixture.
 
 ```sh
-vr import --name payment-failed --version 2024-04-10 --file fixtures/old.json
-vr import --name payment-failed --version 2025-02-24 --file fixtures/new.json
+vr import --name payment-failed --version 2024-04-10 --file examples/old.json
+vr import --name payment-failed --version 2025-02-24 --file examples/new.json
 ```
 
 Compare versions and save the pull-request artifact:

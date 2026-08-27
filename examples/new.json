@@ -1,0 +1,18 @@
+{
+  "method": "POST",
+  "path": "/webhooks/provider",
+  "headers": {
+    "content-type": "application/json",
+    "provider-version": "2025-02-24",
+    "authorization": "Bearer example-secret"
+  },
+  "body": {
+    "type": "payment.failed",
+    "data": {
+      "id": "evt_local_001",
+      "amount": "2400",
+      "currency": "usd",
+      "customer_email": "person@example.test"
+    }
+  }
+}

@@ -114,6 +114,8 @@ struct VerifyResponse {
 pub fn default_config(encrypted: bool, mut body: Vec<String>, mut headers: Vec<String>) -> Config {
     let mut defaults = vec![
         "**.email".to_string(),
+        "**.customer_email".to_string(),
+        "**.billing_email".to_string(),
         "**.phone".to_string(),
         "**.cvc".to_string(),
         "**.card_number".to_string(),
