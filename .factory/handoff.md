@@ -1,4 +1,18 @@
-# Version Replay v0.1 handoff
+# Version Replay verification handoff — FAIL
+
+**Candidate:** `5c560636d39f6ec1c390946d578f77186678073a`
+**Live URL:** https://api-version-replay.sociobot.in/
+**Verification report:** `.factory/verification.md`
+
+## Unambiguous release status
+
+**FAIL. Do not release until the deployment's response-policy configuration is fixed and reverified.** The candidate itself builds and its CLI/browser functionality passes, and the live HTML/JS/CSS match the candidate byte-for-byte. The static host serves `/_headers` as a downloadable file instead of applying it: live responses lack the declared CSP, `X-Frame-Options`, and `Permissions-Policy`; hashed assets get only `Cache-Control: public, must-revalidate, max-age=30`; and the service worker is not `no-cache`.
+
+Factory next step: install the same header rules in the deploy platform's supported configuration, redeploy, and rerun the three `curl -I` probes recorded in `.factory/verification.md`. No product code was changed by verification.
+
+---
+
+# Builder handoff (superseded by verification result)
 
 ## What shipped
 
