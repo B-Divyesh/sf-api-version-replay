@@ -104,12 +104,19 @@ License checks are cached for 24 hours and never block free commands. Sociobot/D
 ## Develop and verify
 
 ```sh
-npm install
+npm ci
 npm test
+npm run typecheck
 npm run build
 ```
 
 `npm test` runs Rust unit/integration tests plus site tests. `npm run build` creates the release binary in `dist/bin/vr` and the static landing/docs site in `dist/site/`. To work on the site, use `npm run dev`; to build only it, use `npm run build:site`.
+
+Run the browser acceptance sweep against a built deployment or local preview. It checks desktop and 390 px mobile interaction, keyboard comparison, reduced motion, axe serious/critical findings, same-origin browsing, and an immediate offline reload:
+
+```sh
+npm run test:browser -- https://api-version-replay.sociobot.in/
+```
 
 Create the registry artifact without publishing:
 

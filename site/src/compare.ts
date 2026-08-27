@@ -38,7 +38,7 @@ function flatten(value: unknown, path: string, schema: FlatMap, values: FlatMap)
 
 function compareMaps(before: FlatMap, after: FlatMap): BrowserChange[] {
   const paths = [...new Set([...before.keys(), ...after.keys()])].sort();
-  return paths.flatMap((path) => {
+  return paths.flatMap<BrowserChange>((path): BrowserChange[] => {
     const left = before.get(path);
     const right = after.get(path);
     if (left === right) return [];
@@ -62,4 +62,3 @@ export function compareJson(beforeText: string, afterText: string): BrowserDiff 
     values: compareMaps(beforeValues, afterValues)
   };
 }
-
