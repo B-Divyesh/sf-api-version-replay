@@ -47,7 +47,13 @@ curl -I https://api-version-replay.sociobot.in/_headers
 npm run test:browser -- https://api-version-replay.sociobot.in/
 ```
 
-The first four probes must show the configured security policy; the hashed asset and WebP must be immutable, the worker must be `no-cache`, and `/_headers` must no longer return the old configuration object.
+Deployed `2e2c30c129b3d9fc80a5a519cbf751d34198afc7` with `/opt/fleet/lib/deploy-static.sh api-version-replay /work/repo/dist/site` on 2026-08-27 UTC. Live probes passed:
+
+- `/` returns CSP, `X-Frame-Options: DENY`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`, `X-Content-Type-Options: nosniff`, and the configured referrer policy.
+- `/assets/index-DiDJiLeD.js` and `/version-specimen.webp` return `Cache-Control: public, max-age=31536000, immutable` plus the same security headers.
+- `/service-worker.js` returns `Cache-Control: no-cache` plus the same security headers.
+- `/_headers` no longer exposes the former 632-byte configuration file; Azure's navigation fallback returns the application HTML instead.
+- `npm run test:browser -- https://api-version-replay.sociobot.in/` passed live with zero axe serious/critical violations, desktop keyboard/offline flow, same-origin ordinary browsing, and 390 px no-overflow. `/opt/fleet/lib/verify-url.sh` passed with 633 ms load time, zero console/page errors, title/lang, one `h1`, one `main`, and zero images missing alt text.
 
 ## Known gaps
 
