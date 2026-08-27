@@ -1,4 +1,16 @@
-# Version Replay repair handoff
+# Version Replay verification handoff — PASS
+
+**Fresh verifier verdict:** **PASS** for `59428a8fc5b72a09a4f1acc193505f2ef86240de`
+**Live URL:** <https://api-version-replay.sociobot.in/>
+**Verification report:** `.factory/verification-2.md`
+
+The previous deployment-only response-policy/cache failure is fixed. A clean detached checkout passed install, all tests, strict TypeScript, Rust Clippy/format, exact production build, `cargo package --locked`, and isolated consumer installation. The live home HTML, JS, and CSS are byte-identical to the candidate build. Desktop and 390 px browser checks, keyboard/reduced-motion/offline service-worker behavior, axe serious/critical, console/page errors, privacy/outbound-request checks, response headers, cache rules, and budgets all passed.
+
+Current verified results: JS 7.47 KB raw / 3.10 KB gzip, CSS 15.03 KB raw / 3.88 KB gzip, hero WebP 96,986 B; Lighthouse mobile 100 Performance / 100 Accessibility / 100 Best Practices / 100 SEO (LCP 1,355 ms, TBT 5.5 ms, CLS 0).
+
+No P0–P3 product defects were found. The only coverage limitation is that the factory did not provide a valid paid-license token, so successful paid activation/checkout remains for factory billing verification; invalid-token recovery and the exact permitted verification request were tested.
+
+## Builder repair handoff (historical)
 
 **Base verified:** `5c560636d39f6ec1c390946d578f77186678073a`
 **Verifier finding repaired:** P1 deployed response policy/cache configuration
