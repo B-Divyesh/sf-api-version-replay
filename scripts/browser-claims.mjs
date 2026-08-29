@@ -19,7 +19,25 @@ try {
   await ready();
   const browser = await chromium.launch();
   try {
-    if (claim === "browser-demo-isolation") {
+    if (claim === "primary-demo-workflow") {
+      // @claim:primary-demo-workflow
+      const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+      const page = await context.newPage();
+      await page.goto(`${origin}/?demo=1`, { waitUntil: "networkidle" });
+      assert(await page.locator("h1").textContent() === "Replay the complete CLI sample", "primary demo should name the complete CLI job");
+      const recording = page.locator(".terminal-recording");
+      await recording.waitFor();
+      const output = await recording.textContent();
+      for (const expected of [
+        "Imported 2 redacted fixtures",
+        "5 contract changes",
+        "Replayed 2024-04-10 → HTTP 204",
+        "Replayed 2025-02-24 → HTTP 204",
+        "version-replay-report.md"
+      ]) assert(output.includes(expected), `primary demo missing: ${expected}`);
+      assert(await page.locator("#bench-title").textContent() === "Compare two sample webhook fixtures", "JSON comparator should remain secondary");
+      await context.close();
+    } else if (claim === "browser-demo-isolation") {
       // @claim:browser-demo-isolation
       const context = await browser.newContext();
       await context.addInitScript(() => {
@@ -37,7 +55,7 @@ try {
       page.on("request", (request) => requests.push({ url: request.url(), data: request.postData() }));
       await page.goto(`${origin}/?demo=1`, { waitUntil: "networkidle" });
       await page.locator(".result-summary").waitFor();
-      assert((await page.locator("h1").allTextContents()).join("") === "Compare sample webhook versions", "demo needs one useful h1");
+      assert((await page.locator("h1").allTextContents()).join("") === "Replay the complete CLI sample", "demo needs one useful h1");
       assert(await page.locator("#demo-banner").isVisible(), "demo banner missing");
       assert(await page.locator("#demo-banner").getByText("Reset demo").isVisible(), "reset missing");
       assert(await page.locator("#demo-banner").getByText("Start for real").isVisible(), "exit missing");
@@ -80,7 +98,7 @@ try {
       // @claim:route-metadata
       const context = await browser.newContext();
       const page = await context.newPage();
-      for (const [path, title, h1] of [["/", "Version Replay — Test webhook versions locally", "Test old webhook versions against localhost"], ["/?demo=1", "Demo — Version Replay", "Compare sample webhook versions"], ["/privacy/", "Privacy — Version Replay", "Privacy"], ["/terms/", "Terms — Version Replay", "Terms"]]) {
+      for (const [path, title, h1] of [["/", "Version Replay — Test webhook versions locally", "Test old webhook versions against localhost"], ["/?demo=1", "Demo — Version Replay", "Replay the complete CLI sample"], ["/privacy/", "Privacy — Version Replay", "Privacy"], ["/terms/", "Terms — Version Replay", "Terms"]]) {
         await page.goto(`${origin}${path}`, { waitUntil: "networkidle" });
         assert(await page.title() === title, `${path} title mismatch`);
         assert(await page.locator("h1").count() === 1, `${path} needs one h1`);

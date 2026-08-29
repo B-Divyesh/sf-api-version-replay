@@ -1,6 +1,6 @@
 # Copy audit
 
-Audited 2026-08-28. Counts treat a hyphenated term as one word. No sentence exceeds 22 words. No supplied banned marketing word appears.
+Audited 2026-08-29. Counts treat a hyphenated term as one word. No sentence exceeds 22 words. No supplied banned marketing word appears.
 
 ## Landing-page sentences
 
@@ -11,7 +11,7 @@ Audited 2026-08-28. Counts treat a hyphenated term as one word. No sentence exce
 | 6 | Test old webhook versions against localhost. | Pass |
 | 10 | For engineers checking an integration before upgrading a provider API. | Pass |
 | 9 | See saved versions, contract changes, and local replay results. | Pass |
-| 3 | You choose the vault directory. | Pass |
+| 5 | You choose the vault directory. | Pass; `@claim:vault-directory` |
 | 6 | Configured fields are removed before storage. | Pass |
 | 4 | Public destinations are rejected. | Pass |
 | 9 | Use a saved webhook fixture for each provider version. | Pass |
@@ -24,7 +24,7 @@ Audited 2026-08-28. Counts treat a hyphenated term as one word. No sentence exce
 | 8 | Run the CLI demo for import and replay. | Pass |
 | 3 | No comparison yet. | Pass |
 | 10 | Compare the fixtures to list type and value changes. | Pass |
-| 14 | `vr demo` creates a new temporary vault and leaves its report there for inspection. | Pass |
+| 14 | `vr demo` creates a new temporary vault and leaves its report there for inspection. | Pass; `@claim:cli-demo-workflow` |
 | 7 | Recorded from the bundled payment webhook fixtures. | Pass |
 | 11 | The Markdown report names both versions and lists their structured changes. | Pass |
 | 8 | It does not send replays to public hosts. | Pass |
@@ -50,7 +50,13 @@ Audited 2026-08-28. Counts treat a hyphenated term as one word. No sentence exce
 
 All are sentence case or compact terminal labels. Word counts range from one to eight. The primary action is `Try it with sample data`. Secondary actions name their result: `Copy install command`, `Compare sample fixtures`, `Reset sample fixtures`, `Reset demo`, `Start for real`, and `Return home`.
 
-The terminal recording is command output, not marketing prose. Its quantitative line reports five changes and is asserted by `@claim:cli-demo-workflow`.
+The demo H1 is `Replay the complete CLI sample`. The terminal recording is command output, not marketing prose. Its quantitative line reports five changes and is asserted by `@claim:primary-demo-workflow` and `@claim:cli-demo-workflow`.
+
+## README changes checked in round 2
+
+`The command prints the temporary vault and report paths.` has nine words and is proved by `@claim:demo-output-paths`. `Install the CLI from this checkout:` is an instruction, not a build-artifact promise.
+
+The catalog sentence has 14 words, starts with `Compare`, and is 91 characters: `Compare saved webhook versions and replay each contract against localhost before an API upgrade.`
 
 ## Terminology
 

@@ -88,12 +88,15 @@ async function runRouting(browser) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const page = await context.newPage();
   await page.goto(url, { waitUntil: "networkidle" });
-  await page.getByRole("link", { name: "How it works" }).click();
-  assert(await page.evaluate(() => location.hash === "#workflow"), "section link should use a real history entry");
-  assert(await page.evaluate(() => document.activeElement?.id === "workflow-title"), "section route should focus its heading");
-  await page.goBack();
-  await page.waitForFunction(() => location.hash === "");
-  assert(await page.evaluate(() => window.scrollY <= 5), "Back should restore the home position");
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await page.getByRole("link", { name: "How it works" }).click();
+    await page.waitForFunction(() => location.hash === "#workflow" && document.activeElement?.id === "workflow-title");
+    assert(await page.evaluate(() => location.hash === "#workflow"), "section link should use a real history entry");
+    await page.goBack();
+    await page.waitForFunction(() => location.hash === "" && window.scrollY <= 5 && document.activeElement?.id === "hero-title");
+    assert(await page.evaluate(() => window.scrollY <= 5), "Back should restore the home position");
+    assert(await page.evaluate(() => document.activeElement?.id === "hero-title"), "Back should focus the home heading");
+  }
   const privacy = new URL("/privacy/", url);
   await page.goto(privacy.href, { waitUntil: "networkidle" });
   await page.waitForFunction(() => document.activeElement?.tagName === "H1");

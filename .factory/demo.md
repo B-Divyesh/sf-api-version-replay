@@ -4,7 +4,9 @@
 
 Open <https://api-version-replay.sociobot.in/?demo=1>.
 
-The page loads two realistic `payment.failed` webhook fixtures and immediately shows their type and value changes. The persistent banner identifies demo mode. `Reset demo` restores and recomputes the sample. `Start for real` returns to the normal landing page.
+The first screen shows the completed `vr demo` workflow: two redacted imports, five contract changes, two loopback HTTP 204 responses, and the Markdown report path. The editable JSON comparator follows as a secondary tool.
+
+The persistent banner identifies demo mode. `Reset demo` restores and recomputes the editable sample. `Start for real` returns to the normal landing page.
 
 Demo mode keeps its state in memory. It never reads or writes `localStorage`, IndexedDB, cookies, or a CLI vault. It makes no billing request. Leaving or reloading discards edits.
 

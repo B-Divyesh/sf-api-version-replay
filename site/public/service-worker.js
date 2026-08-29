@@ -1,4 +1,4 @@
-const CACHE = "version-replay-shell-v3";
+const CACHE = "version-replay-shell-v4";
 const SHELL = ["/", "/?demo=1", "/privacy/", "/terms/", "/404.html", "/version-specimen.webp", "/favicon.svg"];
 
 async function cacheShell() {

@@ -69,6 +69,57 @@ fn claim_cli_demo_workflow() {
     assert!(markdown.contains("Contract changed"));
 }
 
+// @claim:demo-output-paths
+#[test]
+fn claim_demo_output_paths() {
+    let output = vr().arg("demo").output().unwrap();
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    let vault = stdout
+        .lines()
+        .find_map(|line| line.strip_prefix("Imported 2 redacted fixtures into "))
+        .expect("plain demo output should print its vault path");
+    let report = stdout
+        .lines()
+        .find_map(|line| line.strip_prefix("Wrote Markdown report to "))
+        .expect("plain demo output should print its report path");
+    assert!(Path::new(vault).is_dir());
+    assert!(Path::new(report).is_file());
+    assert!(Path::new(report).starts_with(Path::new(vault).parent().unwrap()));
+}
+
+// @claim:vault-directory
+#[test]
+fn claim_vault_directory() {
+    let temp = tempdir().unwrap();
+    let chosen = temp.path().join("chosen-location").join("contract-vault");
+    let input = temp.path().join("fixture.json");
+    fs::write(&input, r#"{"body":{"type":"payment.failed"}}"#).unwrap();
+
+    vr().current_dir(temp.path())
+        .args(["--vault", chosen.to_str().unwrap(), "init"])
+        .assert()
+        .success();
+    vr().current_dir(temp.path())
+        .args([
+            "--vault",
+            chosen.to_str().unwrap(),
+            "import",
+            "--name",
+            "payment-failed",
+            "--version",
+            "v1",
+            "--file",
+            input.to_str().unwrap(),
+        ])
+        .assert()
+        .success();
+
+    assert!(chosen.join("config.json").is_file());
+    assert!(chosen.join("fixtures/payment-failed--v1.json").is_file());
+    assert!(!temp.path().join(".version-replay").exists());
+}
+
 // @claim:redaction-before-storage
 #[test]
 fn claim_redaction_before_storage() {

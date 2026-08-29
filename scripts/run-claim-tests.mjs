@@ -3,6 +3,8 @@ import { spawnSync } from "node:child_process";
 const requested = process.argv[2];
 const rustClaims = [
   "cli-demo-workflow",
+  "demo-output-paths",
+  "vault-directory",
   "redaction-before-storage",
   "loopback-only",
   "encrypted-storage",
@@ -16,7 +18,7 @@ const rustClaims = [
   "no-telemetry",
   "mit-license"
 ];
-const browserClaims = ["browser-demo-isolation", "browser-storage-scope", "offline-demo", "route-metadata"];
+const browserClaims = ["primary-demo-workflow", "browser-demo-isolation", "browser-storage-scope", "offline-demo", "route-metadata"];
 const claims = requested ? [requested] : [...rustClaims, ...browserClaims];
 let siteBuilt = false;
 

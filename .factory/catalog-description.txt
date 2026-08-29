@@ -1,1 +1,1 @@
-Test saved webhook versions against localhost before upgrading a provider API.
+Compare saved webhook versions and replay each contract against localhost before an API upgrade.

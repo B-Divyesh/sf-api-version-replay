@@ -297,6 +297,25 @@ h3 {
   display: none;
 }
 
+.demo-request .demo-banner[hidden] {
+  display: flex;
+}
+
+.demo-request main {
+  display: flex;
+  flex-direction: column;
+}
+
+.demo-request .hero,
+.demo-request .proof-strip,
+.demo-request .workflow {
+  display: none;
+}
+
+.demo-request .terminal-demo {
+  order: -1;
+}
+
 .demo-actions {
   display: flex;
   align-items: center;
@@ -517,14 +536,18 @@ h3 {
   font-size: 18px;
 }
 
-.demo-mode .bench {
-  padding-top: 64px;
+.demo-mode .demo-primary {
+  padding-block: 64px;
 }
 
-.demo-mode .bench h1 {
-  max-width: 14ch;
-  margin-bottom: 0;
+.demo-mode .demo-primary h1 {
+  max-width: 12ch;
+  margin-bottom: 24px;
   font-size: clamp(44px, 6vw, 72px);
+}
+
+.demo-mode .bench {
+  padding-top: 80px;
 }
 
 .demo-mode .result-panel {

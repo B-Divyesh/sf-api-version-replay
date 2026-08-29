@@ -16,7 +16,7 @@ The command prints the temporary vault and report paths. The browser sample is a
 
 ## Install
 
-Build the single binary:
+Install the CLI from this checkout:
 
 ```sh
 cargo install --path .
