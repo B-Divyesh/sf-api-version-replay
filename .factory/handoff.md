@@ -51,10 +51,33 @@ Local evidence:
 - `.factory/home-report.png`, `.factory/404.png`
 - `.factory/verify-local.json`, `.factory/lighthouse-local.json`
 
-## Clean clone and live deployment
+## Clean clone evidence
 
-Pending final commit, clean-clone run, deployment, and cold-live verification. This section will be replaced with exact commit, live hashes, route statuses, headers, and live screenshot paths before handoff.
+A fresh clone of `origin/main` at `88dc1e6ca8e8a21fe7cb7b3750e55e203a2d7495` ran the complete command set above. All 17 individual claim tests, Rust/site tests, clippy, formatting, typecheck, build, package verification, and browser sweep passed. `npm ci` reported 0 vulnerabilities.
+
+## Deployment and cold-live evidence
+
+Deployed through `/opt/fleet/lib/deploy-static.sh api-version-replay /work/repo/dist/site`.
+
+- Azure deployment ID: `20e4d743-2096-4fcd-982b-0d075733f3e4`.
+- Live URL: <https://api-version-replay.sociobot.in/>.
+- Home, `?demo=1`, Privacy, Terms, robots, sitemap, favicon, Apple icon, social card, and GitHub links returned HTTP 200.
+- `/this-route-does-not-exist` returned HTTP 404 with title `Page not found — Version Replay` and H1 `This page was not found`.
+- Cold demo at desktop and 390 px had one H1, completed changes, the banner/reset/exit actions, zero overflow, zero console errors, zero external requests, and zero storage reads/writes.
+- Live browser suite passed twice-used route focus/history, offline reload, keyboard, mobile, reduced-motion, and route-wide axe checks.
+- Home response includes CSP, `X-Frame-Options: DENY`, Permissions-Policy, `nosniff`, HSTS, and referrer policy.
+- Hashed JS returns `Cache-Control: public, max-age=31536000, immutable`; the service worker returns `Cache-Control: no-cache`.
+- Live and built SHA-256 hashes match for home HTML, JS, CSS, 404, Privacy, and Terms.
+- Live Lighthouse mobile: Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 944 ms, LCP 1,384 ms, TBT 29 ms, CLS 0.
+
+Live evidence:
+
+- `.factory/live/verify.json`
+- `.factory/live/lighthouse.json`
+- `.factory/live/home-desktop.png`, `.factory/live/home-mobile.png`
+- `.factory/live/demo-desktop.png`, `.factory/live/demo-mobile.png`
+- `.factory/live/404.png`
 
 ## Known gaps
 
-No product or test gaps are open. Paid purchase was deliberately removed because the reviewed Sociobot checkout returned 404; this avoids advertising an unavailable feature.
+No product, test, deployment, or review gaps are open. Paid purchase was deliberately removed because the reviewed Sociobot checkout returned 404; this avoids advertising an unavailable feature.

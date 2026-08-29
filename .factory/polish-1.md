@@ -108,4 +108,4 @@ Evidence shorthand: `C:<id>` means `npm run test:claims -- <id>`; `B` means `npm
 
 ## Final evidence
 
-Local and clean-clone commands, deployed hashes, headers, live 404 status, Lighthouse scores, and cold-live screenshots are recorded in `.factory/handoff.md` after deployment.
+The clean clone at `88dc1e6ca8e8a21fe7cb7b3750e55e203a2d7495` passed every declared claim plus all unit, integration, build, browser, accessibility, privacy, offline, lint, format, and package gates. Deployment `20e4d743-2096-4fcd-982b-0d075733f3e4` is live at <https://api-version-replay.sociobot.in/>. Built/live hashes match; the unknown-route check returns 404; live Lighthouse scores 100/100/100/100. Cold-live screenshots and verifier reports are under `.factory/live/` and summarized in `.factory/handoff.md`.
