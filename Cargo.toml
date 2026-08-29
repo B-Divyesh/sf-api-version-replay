@@ -9,6 +9,16 @@ repository = "https://github.com/B-Divyesh/sf-api-version-replay"
 readme = "README.md"
 keywords = ["webhook", "testing", "api", "cli"]
 categories = ["command-line-utilities", "development-tools::testing"]
+include = [
+  "/src/**",
+  "/examples/**",
+  "/tests/**",
+  "/README.md",
+  "/CHANGELOG.md",
+  "/LICENSE",
+  "/Cargo.toml",
+  "/Cargo.lock"
+]
 
 [[bin]]
 name = "vr"
@@ -35,4 +45,3 @@ tempfile = "3.14"
 [profile.release]
 lto = "thin"
 strip = true
-

@@ -15,6 +15,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Rewrote the site and README in direct webhook-fixture terminology.
 - Removed the unavailable paid purchase and license paths.
 - Corrected the CLI guide fragment and removed unsupported privacy assurances.
+- Excluded site and factory evidence files from the publishable CLI crate.
 
 ## [0.1.0] - 2026-08-27
 
