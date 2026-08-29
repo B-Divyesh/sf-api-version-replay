@@ -5,14 +5,17 @@ use serde_json::{Value, json};
 use std::{
     collections::BTreeMap,
     fs,
+    io::{Read, Write},
+    net::TcpListener,
     path::{Path, PathBuf},
     process::ExitCode,
+    thread,
 };
 use tiny_http::{Response, Server, StatusCode};
 use version_replay::{
-    ContractDiff, Fixture, activate_license, default_config, diff_contract, ensure_pro, init_vault,
-    junit_report, list_fixtures, load_config, load_fixture, markdown_report, parse_fixture_file,
-    redact_fixture, replay_fixture, save_config, store_fixture,
+    ContractDiff, Fixture, default_config, diff_contract, init_vault, list_fixtures, load_config,
+    load_fixture, markdown_report, parse_fixture_file, redact_fixture, replay_fixture,
+    store_fixture,
 };
 
 #[derive(Debug, Parser)]
@@ -24,7 +27,7 @@ use version_replay::{
     after_help = "Exit codes: 0 success, 1 operational error, 3 differences found, 4 replay received a non-2xx response.\nDocs: https://api-version-replay.sociobot.in"
 )]
 struct Cli {
-    /// Emit stable machine-readable JSON.
+    /// Emit JSON.
     #[arg(long, global = true)]
     json: bool,
 
@@ -38,6 +41,8 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Run the complete workflow with bundled sample data in a temporary vault.
+    Demo,
     /// Create a local fixture vault.
     Init(InitArgs),
     /// Import and redact a JSON fixture.
@@ -50,12 +55,8 @@ enum Command {
     Diff(CompareArgs),
     /// Replay one saved request to a loopback URL.
     Replay(ReplayArgs),
-    /// Write a review artifact for two versions.
+    /// Write a report for two versions.
     Report(ReportArgs),
-    /// Replay every saved version of a fixture (Pro).
-    Batch(BatchArgs),
-    /// Activate or inspect the one-time Pro license.
-    License(LicenseArgs),
 }
 
 #[derive(Debug, Args)]
@@ -81,7 +82,7 @@ struct ImportArgs {
     /// Provider API version label.
     #[arg(long)]
     version: String,
-    /// JSON body or request envelope file.
+    /// JSON body or request fixture file.
     #[arg(long)]
     file: PathBuf,
     /// Replace an existing fixture with the same name and version.
@@ -128,7 +129,6 @@ struct ReplayArgs {
 enum ReportFormat {
     Markdown,
     Json,
-    Junit,
 }
 
 #[derive(Debug, Args)]
@@ -144,30 +144,6 @@ struct ReportArgs {
     /// Write to this file instead of stdout.
     #[arg(long)]
     output: Option<PathBuf>,
-}
-
-#[derive(Debug, Args)]
-struct BatchArgs {
-    #[arg(long)]
-    name: String,
-    #[arg(long)]
-    to: String,
-}
-
-#[derive(Debug, Args)]
-struct LicenseArgs {
-    #[command(subcommand)]
-    action: LicenseAction,
-}
-
-#[derive(Debug, Subcommand)]
-enum LicenseAction {
-    /// Verify and save a license token on this device.
-    Activate { token: String },
-    /// Show the locally cached license state.
-    Status,
-    /// Remove the saved license token from this device.
-    Remove,
 }
 
 fn main() -> ExitCode {
@@ -187,6 +163,7 @@ fn main() -> ExitCode {
 
 fn run(cli: &Cli) -> Result<u8> {
     match &cli.command {
+        Command::Demo => demo(cli),
         Command::Init(args) => {
             let config = default_config(
                 args.encrypted,
@@ -277,10 +254,6 @@ fn run(cli: &Cli) -> Result<u8> {
             Ok(if result.ok { 0 } else { 4 })
         }
         Command::Report(args) => {
-            let mut config = load_config(&cli.vault)?;
-            if matches!(args.format, ReportFormat::Junit) {
-                ensure_pro(&cli.vault, &mut config)?;
-            }
             let compare = CompareArgs {
                 name: args.name.clone(),
                 from: args.from.clone(),
@@ -290,7 +263,6 @@ fn run(cli: &Cli) -> Result<u8> {
             let report = match args.format {
                 ReportFormat::Markdown => markdown_report(&diff),
                 ReportFormat::Json => serde_json::to_string_pretty(&diff)?,
-                ReportFormat::Junit => junit_report(&diff),
             };
             if let Some(path) = &args.output {
                 fs::write(path, report.as_bytes())
@@ -305,41 +277,112 @@ fn run(cli: &Cli) -> Result<u8> {
             }
             Ok(0)
         }
-        Command::Batch(args) => {
-            let mut config = load_config(&cli.vault)?;
-            ensure_pro(&cli.vault, &mut config)?;
-            let fixtures: Vec<_> = list_fixtures(&cli.vault, &config)?
-                .into_iter()
-                .filter(|fixture| fixture.name == args.name)
-                .collect();
-            if fixtures.is_empty() {
-                bail!("no fixtures named `{}`", args.name);
-            }
-            let mut results = Vec::new();
-            for fixture in fixtures {
-                results.push(replay_fixture(&fixture, &args.to)?);
-            }
-            let all_ok = results.iter().all(|result| result.ok);
-            if cli.json {
-                println!(
-                    "{}",
-                    serde_json::to_string_pretty(&json!({"ok": all_ok, "results": results}))?
-                );
-            } else {
-                for result in &results {
-                    println!(
-                        "{}\t{}@{}\tHTTP {}",
-                        if result.ok { "PASS" } else { "FAIL" },
-                        result.name,
-                        result.version,
-                        result.status
-                    );
+    }
+}
+
+fn demo(cli: &Cli) -> Result<u8> {
+    let demo_root = std::env::temp_dir().join(format!(
+        "version-replay-demo-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis()
+    ));
+    let vault = demo_root.join("vault");
+    fs::create_dir_all(&demo_root)?;
+    let old_path = demo_root.join("payment-failed-2024-04-10.json");
+    let new_path = demo_root.join("payment-failed-2025-02-24.json");
+    fs::write(&old_path, include_str!("../examples/old.json"))?;
+    fs::write(&new_path, include_str!("../examples/new.json"))?;
+
+    let config = default_config(false, Vec::new(), Vec::new());
+    init_vault(&vault, &config)?;
+    for (version, path) in [("2024-04-10", &old_path), ("2025-02-24", &new_path)] {
+        let mut fixture = parse_fixture_file(path, "payment-failed", version)?;
+        redact_fixture(&mut fixture, &config);
+        store_fixture(&vault, &config, &fixture, false)?;
+    }
+
+    let old = load_fixture(&vault, &config, "payment-failed", "2024-04-10")?;
+    let new = load_fixture(&vault, &config, "payment-failed", "2025-02-24")?;
+    let diff = diff_contract(&old, &new);
+
+    let listener = TcpListener::bind("127.0.0.1:0")?;
+    let address = listener.local_addr()?;
+    let receiver = thread::spawn(move || -> Result<Vec<String>> {
+        let mut requests = Vec::new();
+        for _ in 0..2 {
+            let (mut stream, _) = listener.accept()?;
+            let mut request = Vec::new();
+            let mut chunk = [0_u8; 4096];
+            loop {
+                let read = stream.read(&mut chunk)?;
+                if read == 0 {
+                    break;
+                }
+                request.extend_from_slice(&chunk[..read]);
+                let text = String::from_utf8_lossy(&request);
+                if let Some(header_end) = text.find("\r\n\r\n") {
+                    let length = text[..header_end]
+                        .lines()
+                        .find_map(|line| {
+                            line.to_ascii_lowercase()
+                                .strip_prefix("content-length:")
+                                .and_then(|value| value.trim().parse::<usize>().ok())
+                        })
+                        .unwrap_or(0);
+                    if request.len() >= header_end + 4 + length {
+                        break;
+                    }
                 }
             }
-            Ok(if all_ok { 0 } else { 4 })
+            requests.push(String::from_utf8_lossy(&request).into_owned());
+            stream.write_all(
+                b"HTTP/1.1 204 No Content\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
+            )?;
         }
-        Command::License(args) => license(cli, args),
+        Ok(requests)
+    });
+
+    let destination = format!("http://{address}/webhooks/provider");
+    let old_replay = replay_fixture(&old, &destination)?;
+    let new_replay = replay_fixture(&new, &destination)?;
+    let requests = receiver
+        .join()
+        .map_err(|_| anyhow!("sample receiver stopped unexpectedly"))??;
+    let report_path = demo_root.join("version-replay-report.md");
+    fs::write(&report_path, markdown_report(&diff))?;
+
+    if cli.json {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&json!({
+                "ok": true,
+                "demo": true,
+                "vault": vault,
+                "fixtures": ["payment-failed@2024-04-10", "payment-failed@2025-02-24"],
+                "redacted": true,
+                "changed": diff.has_changes(),
+                "change_counts": {"headers": diff.headers.len(), "schema": diff.schema.len(), "body": diff.body.len()},
+                "replays": [old_replay, new_replay],
+                "receiver_requests": requests.len(),
+                "report": report_path
+            }))?
+        );
+    } else {
+        println!("Version Replay sample");
+        println!("Imported 2 redacted fixtures into {}", vault.display());
+        println!(
+            "Compared 2024-04-10 → 2025-02-24: {} contract changes",
+            diff.headers.len() + diff.schema.len() + diff.body.len()
+        );
+        println!("Replayed 2024-04-10 → HTTP {}", old_replay.status);
+        println!("Replayed 2025-02-24 → HTTP {}", new_replay.status);
+        println!("Wrote Markdown report to {}", report_path.display());
+        println!("Sample data is isolated. Run `vr demo` again to reset it.");
     }
+    Ok(0)
 }
 
 fn capture(cli: &Cli, args: &CaptureArgs) -> Result<u8> {
@@ -416,55 +459,6 @@ fn capture(cli: &Cli, args: &CaptureArgs) -> Result<u8> {
         }
     }
     Ok(0)
-}
-
-fn license(cli: &Cli, args: &LicenseArgs) -> Result<u8> {
-    let mut config = load_config(&cli.vault)?;
-    match &args.action {
-        LicenseAction::Activate { token } => {
-            let cache = activate_license(&cli.vault, &mut config, token)?;
-            emit(
-                cli.json,
-                &json!({"ok": cache.valid, "valid": cache.valid, "reason": cache.reason, "expires_at": cache.expires_at}),
-                if cache.valid {
-                    "Pro license active"
-                } else {
-                    "License no longer active"
-                },
-            )?;
-            Ok(if cache.valid { 0 } else { 1 })
-        }
-        LicenseAction::Status => {
-            let value = config.license.as_ref().map(|cache| {
-                json!({
-                    "valid": cache.valid,
-                    "reason": cache.reason,
-                    "checked_at": cache.checked_at,
-                    "expires_at": cache.expires_at
-                })
-            });
-            emit(
-                cli.json,
-                &json!({"ok": true, "license": value}),
-                match config.license.as_ref() {
-                    Some(cache) if cache.valid => "Pro license active",
-                    Some(_) => "License no longer active",
-                    None => "No Pro license saved",
-                },
-            )?;
-            Ok(0)
-        }
-        LicenseAction::Remove => {
-            config.license = None;
-            save_config(&cli.vault, &config)?;
-            emit(
-                cli.json,
-                &json!({"ok": true, "removed": true}),
-                "Removed the saved license from this device",
-            )?;
-            Ok(0)
-        }
-    }
 }
 
 fn load_diff(vault: &Path, args: &CompareArgs) -> Result<ContractDiff> {

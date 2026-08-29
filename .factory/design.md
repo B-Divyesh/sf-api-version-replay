@@ -19,7 +19,7 @@ The site supports light and dark treatments. Light is poured concrete in dayligh
 | moss accent | `#315E2D` | `#A9D66F` | viable contract path |
 | accent contrast | `#FFFFFF` | `#13200F` | label on moss |
 | success | `#245B37` | `#8ED09C` | replay received |
-| warning | `#805B00` | `#F1C75B` | changed contract |
+| warning | `#704E00` | `#F1C75B` | changed contract |
 | danger | `#8A2820` | `#FF9389` | failed replay |
 
 All body/text pairs are designed to meet WCAG AA at 4.5:1. State always has an icon or written label as well as color. Focus is a 3 px moss outline with a 2 px background offset.
@@ -45,6 +45,8 @@ UI feedback lasts 160–220 ms and changes only opacity or transform. The hero's
 - Hero: one original raster still, generated for this product with `/opt/fleet/lib/gen-image.sh` using the factory image deployment, then locally cropped/optimized to WebP at no more than 300 KB. It depicts a small concrete contract specimen with moss tracing a payload seam, photographed like an archival lab object. It contains no text, logo, people or provider marks. Final filename: `site/public/version-specimen.webp`.
 - Prompt: “Editorial product photograph for a developer-tool landing page. A single rough cast-concrete archive tile on a charcoal-black workbench, its top surface formed by three thin offset layers like versioned documents. One precise seam carries a narrow line of living green moss, suggesting a compatible data path through old layers. Sparse brass registration pins and subtle punched holes imply HTTP headers and JSON structure without readable text. Brutalist material study, tactile aggregate, restrained moss green, warm grey concrete, hard side light, deep controlled shadows, wide horizontal composition with generous dark negative space on the left, object weighted to the right. No text, no letters, no numbers, no logo, no UI screenshot, no neon, no gradient, no people, no watermark.”
 - License/provenance: generated specifically for Version Replay in this build; owned project asset, not sourced from a stock library. Generation metadata is retained beside the original during production.
+- Social card: `site/public/social-card.jpg`, cropped and darkened from the same original product asset at 1200 × 630. No third-party asset was introduced.
+- Favicon and Apple touch icon: hand-authored geometric replay arrows in the product's charcoal and moss tokens.
 - Interface icons are hand-authored CSS or Unicode symbols with visible text labels; there is no third-party icon pack.
 
 ## Why it fits

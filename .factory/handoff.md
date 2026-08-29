@@ -1,51 +1,60 @@
-# Version Replay adversarial review 1 handoff
+# Version Replay polish 1 handoff
 
 ## Outcome
 
-Review verdict: **FAIL**. The complete evidence and 98 findings are in `.factory/review-1.md`.
+All F-1-1 through F-1-98 findings from `.factory/review-1.md` are implemented. The per-finding change and evidence map is `.factory/polish-1.md`.
 
-No product code was changed. This work order changed only the review and this handoff.
+The product remains a Rust `vr` single-binary CLI with a Vite static documentation site. The concrete-and-moss visual system remains intact.
 
-## What was reviewed
+## What changed
 
-- Cold live loads at 390 × 844 and 1440 × 900 before scrolling.
-- Landing/README sentence inventory, word counts, headings, terminology, and action labels.
-- Browser sample flow, reset, request log, offline behavior, storage namespaces, and `/demo` behavior.
-- CLI behavior from temporary directories, including the missing `vr demo` command and actual report output.
-- All live links, route status, metadata, 404 behavior, focus/history behavior, header/footer structure, and visual identity.
-- `.factory/claims.json` and claim tags; both are absent.
-- Earlier handoff/verification history; the prior response-policy/cache P1 remains fixed.
-- Accessibility via the repository Playwright/axe sweep and the factory URL verifier.
+- Rewrote the first screen around the job, audience, one sample-data action, outcome, and three facts.
+- Added `vr demo`. It uses bundled fixtures, a unique temporary vault, a loopback receiver, both replays, and a Markdown report.
+- Added isolated `?demo=1` browser mode with a persistent banner, completed result, reset, and exit. It never accesses browser storage.
+- Added `.factory/claims.json` with 17 claims and exactly one tagged clean-sandbox test per claim.
+- Removed the dead checkout and all paid/license claims and commands. There is no purchase action until the factory registers a working product.
+- Added route metadata, shared navigation/footer, focus and history restoration, a designed 404, icons, social card, and sitemap updates.
+- Rewrote landing, README, legal, status, error, and action copy around `webhook fixture`, `contract changes`, and `report`.
+- Added responsive demo/result layouts, contrast fixes, route-wide axe checks, and privacy/offline tests.
 
-## Verification run
+## Local verification
 
-From isolated detached worktree `/tmp/api-version-replay-review.KW9H0h` at `d29c2bf91857b8cbbf1e293140442fa00a963e31`:
+Run from `/work/repo`:
 
 ```sh
 npm ci
 npm test
 npm run typecheck
+cargo fmt --check
+cargo clippy --all-targets --all-features -- -D warnings
 npm run build
+cargo package --locked
+npm run test:browser -- http://127.0.0.1:4173/
 ```
 
-All passed. The build produced `dist/bin/vr` and `dist/site/`.
+Local results on 2026-08-29:
 
-Live checks:
+- Rust: 3 unit, 3 original CLI integration, and 13 claim tests passed.
+- Site: 5 Vitest tests passed, including claims-inventory and static-policy validation.
+- Claims: all 17 declared commands passed individually.
+- Browser: home/demo/privacy/terms/404 passed keyboard, focus/history, reduced-motion, offline, 390 px overflow, and console checks.
+- Accessibility: Playwright axe WCAG A/AA reported 0 serious or critical findings on every route.
+- URL verifier: title, `lang`, one H1, main, alt text, labels, and console checks passed.
+- Build: `dist/bin/vr` and `dist/site/` produced; `cargo package --locked --allow-dirty` packaged and verified 64 files.
+- Budgets: initial app JS 6,802 B raw / 2,756 B gzip; CSS 17,944 B raw / 4,492 B gzip; hero WebP 96,986 B.
+- Lighthouse mobile local: Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 999 ms, LCP 1,527 ms, TBT 12 ms, CLS 0.
 
-```sh
-npm run test:browser -- https://api-version-replay.sociobot.in/
-/opt/fleet/lib/verify-url.sh https://api-version-replay.sociobot.in/ <temporary-evidence-dir>
-```
+Local evidence:
 
-Both passed their existing assertions. Additional Playwright/curl checks produced the failures documented in the review.
+- `.factory/home.png`, `.factory/home-mobile.png`
+- `.factory/demo-desktop.png`, `.factory/demo-mobile.png`
+- `.factory/home-report.png`, `.factory/404.png`
+- `.factory/verify-local.json`, `.factory/lighthouse-local.json`
 
-## Blocking gaps
+## Clean clone and live deployment
 
-- The first screen uses a metaphorical headline, omits the audience, and has no single sample-data action.
-- There is no real isolated demo, `vr demo`, demo banner, `.factory/demo.md`, or demo storage namespace.
-- `.factory/claims.json` and `@claim:` tests are missing; all live/README claims are unlisted.
-- The report preview promises `Replay PASS / 204`, but real reports contain no replay result.
-- The live Pro checkout link returns HTTP 404.
-- Unknown routes return the home page with HTTP 200; there is no designed 404.
+Pending final commit, clean-clone run, deployment, and cold-live verification. This section will be replaced with exact commit, live hashes, route statuses, headers, and live screenshot paths before handoff.
 
-See `.factory/review-1.md` for exact quotes, rewrites, test requirements, and the remaining structure/copy findings.
+## Known gaps
+
+No product or test gaps are open. Paid purchase was deliberately removed because the reviewed Sociobot checkout returned 404; this avoids advertising an unavailable feature.

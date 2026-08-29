@@ -1,90 +1,64 @@
 # Version Replay
 
-Version Replay (`vr`) is a local-first CLI for engineers who need to prove that an integration still accepts an older third-party webhook or HTTP contract before they upgrade it. It stores redacted, version-labelled fixtures on your laptop, compares their headers, values and JSON schemas, replays them only to localhost, and emits a reviewable Markdown or JSON report.
+Version Replay is a local CLI for engineers testing older webhook contracts before a provider API upgrade.
 
-No provider account, public tunnel or credentials are required. There is no telemetry.
+It saves redacted fixtures by provider version. Compare changes, replay requests to localhost, and export Markdown or JSON reports.
+
+## Try the sample
+
+The bundled demo creates a new temporary vault each time. It imports two payment webhook fixtures, compares them, replays both, and writes a report.
+
+```sh
+cargo run -- demo
+```
+
+The command prints the temporary vault and report paths. The browser sample is available at <https://api-version-replay.sociobot.in/?demo=1>.
 
 ## Install
 
-Build the single binary with Rust 1.82 or newer:
+Build the single binary:
 
 ```sh
 cargo install --path .
 vr --help
 ```
 
-Prebuilt release archives are intended to be attached by the factory after launch; this repository does not publish itself.
+Registry publishing and release archives are managed outside this repository.
 
-## Usage
+## Use your fixtures
 
-Create a local vault. Common payment and identity fields and sensitive headers are redacted by default:
+Create a vault, then import two saved webhook fixtures:
 
 ```sh
 vr init
-```
-
-Import two saved webhook envelopes. An envelope may contain `method`, `path`, `headers`, and `body`; a plain JSON document is treated as the body of a `POST /` fixture.
-
-```sh
 vr import --name payment-failed --version 2024-04-10 --file examples/old.json
 vr import --name payment-failed --version 2025-02-24 --file examples/new.json
 ```
 
-Compare versions and save the pull-request artifact:
+Compare the versions and export a Markdown report:
 
 ```sh
 vr diff --name payment-failed --from 2024-04-10 --to 2025-02-24
 vr report --name payment-failed --from 2024-04-10 --to 2025-02-24 --output replay-report.md
 ```
 
-Replay the exact saved request to a local service. Version Replay refuses non-loopback destinations:
+Replay one saved request to a local service:
 
 ```sh
 vr replay --name payment-failed --version 2024-04-10 --to http://127.0.0.1:3000/webhooks/provider
 ```
 
-Capture the next request sent to a local listener, redact it, then stop:
+Capture one incoming request on a loopback listener:
 
 ```sh
 vr capture --name payment-failed --version 2024-04-10 --listen 127.0.0.1:9031 --once
 ```
 
-Add `--json` before the subcommand for stable machine-readable output. `diff` exits `3` when it finds a difference; `replay` exits `4` when localhost returns a non-2xx response; operational failures exit `1`.
-
-### Encrypted vault
-
-Set a passphrase in an environment variable and initialize with encryption. Fixture contents use Argon2id key derivation and AES-256-GCM authenticated encryption; vault metadata stays readable.
-
-```sh
-export VERSION_REPLAY_PASSPHRASE='use-a-secret-from-your-password-manager'
-vr init --encrypted
-```
-
-The passphrase is never written to disk. Losing it makes the fixture files unrecoverable.
-
-### Custom redaction
-
-Body paths use dot notation and `*` for one segment. Header names are case-insensitive.
-
-```sh
-vr init --redact-body 'payer.*.email' --redact-header 'x-internal-token'
-```
-
-Redaction happens before a fixture is written, including inside encrypted vaults.
-
-### One-time Pro unlock
-
-The free CLI includes local capture, redaction, encrypted storage, individual replay, contract diff and report export. A one-time Pro license adds batch replay across every saved version and JUnit output for CI. Buy through the Sociobot-hosted checkout on the product site, then restore the token on any device:
-
-```sh
-vr license activate YOUR_LICENSE_TOKEN
-vr license status
-vr batch --name payment-failed --to http://127.0.0.1:3000/webhooks/provider
-```
-
-License checks are cached for 24 hours and never block free commands. Sociobot/Dodo is the merchant of record.
+Place `--json` before `demo` to receive JSON. A changed diff exits `3`; a rejected replay response exits `4`.
 
 ## Fixture format
+
+A fixture can contain `method`, `path`, `headers`, and `body`. A plain JSON file becomes the body of a `POST /` fixture.
 
 ```json
 {
@@ -101,6 +75,23 @@ License checks are cached for 24 hours and never block free commands. Sociobot/D
 }
 ```
 
+## Redaction and encryption
+
+Default rules redact common identity, payment, cookie, and authorization fields before storage. Add rules when creating a vault:
+
+```sh
+vr init --redact-body 'payer.*.email' --redact-header 'x-internal-token'
+```
+
+Encrypted vaults use AES-256-GCM with an Argon2id-derived key. The passphrase stays in the environment and is not written to the vault.
+
+```sh
+export VERSION_REPLAY_PASSPHRASE='use-a-secret-from-your-password-manager'
+vr init --encrypted
+```
+
+Replay accepts loopback destinations only. The CLI has no telemetry client and does not require provider credentials.
+
 ## Develop and verify
 
 ```sh
@@ -108,28 +99,25 @@ npm ci
 npm test
 npm run typecheck
 npm run build
+npm run test:browser -- http://127.0.0.1:4173/
 ```
 
-`npm test` runs Rust unit/integration tests plus site tests. `npm run build` creates the release binary in `dist/bin/vr` and the static landing/docs site in `dist/site/`. To work on the site, use `npm run dev`; to build only it, use `npm run build:site`.
-
-Run the browser acceptance sweep against a built deployment or local preview. It checks desktop and 390 px mobile interaction, keyboard comparison, reduced motion, axe serious/critical findings, same-origin browsing, and an immediate offline reload:
+Create the registry package without publishing:
 
 ```sh
-npm run test:browser -- https://api-version-replay.sociobot.in/
+cargo package --locked
 ```
 
-Create the registry artifact without publishing:
+## Deploy the documentation site
 
 ```sh
-cargo package
+npm run build:site
 ```
 
-## Privacy and security
+Use `dist/site` as the static deployment directory. The factory manages infrastructure and DNS.
 
-Everything in the vault stays local. Replays are restricted to loopback hosts, default redaction is conservative, and the optional vault is encrypted at rest. See the site’s [privacy policy](https://api-version-replay.sociobot.in/privacy/) and [terms](https://api-version-replay.sociobot.in/terms/).
-
-Security reports can be opened as private advisories in the repository. Do not attach real webhook payloads.
+See the [privacy policy](https://api-version-replay.sociobot.in/privacy/) and [terms](https://api-version-replay.sociobot.in/terms/).
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+[MIT](LICENSE)

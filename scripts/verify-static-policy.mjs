@@ -24,9 +24,10 @@ for (const [header, value] of Object.entries(expectedHeaders)) {
   if (headers[header] !== value) throw new Error(`Missing or incorrect ${header}`);
 }
 const csp = headers["Content-Security-Policy"] ?? "";
-for (const directive of ["default-src 'self'", "frame-ancestors 'none'", "connect-src 'self' https://api.sociobot.in"]) {
+for (const directive of ["default-src 'self'", "frame-ancestors 'none'", "connect-src 'self'"]) {
   if (!csp.includes(directive)) throw new Error(`CSP is missing ${directive}`);
 }
+if (config.responseOverrides?.["404"]?.rewrite !== "/404.html") throw new Error("Missing 404 response override");
 
 const cacheRules = Object.fromEntries(
   (config.routes ?? []).map((route) => [route.route, route.headers?.["Cache-Control"]])

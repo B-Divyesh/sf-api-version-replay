@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config site/vite.config.ts",
-    "test": "cargo test && npm run test:site",
+    "test": "cargo test && npm run test:site && npm run test:claims",
+    "test:claims": "node scripts/run-claim-tests.mjs",
     "test:site": "vitest run --config site/vitest.config.ts",
     "test:browser": "node scripts/browser-smoke.mjs",
     "typecheck": "tsc --project site/tsconfig.json",

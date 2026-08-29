@@ -17,8 +17,6 @@ use std::{
 use url::Url;
 
 pub const PASSPHRASE_ENV: &str = "VERSION_REPLAY_PASSPHRASE";
-pub const BILLING_BASE_ENV: &str = "VERSION_REPLAY_BILLING_BASE";
-const PRODUCT_SLUG: &str = "api-version-replay";
 const REDACTED: &str = "[REDACTED]";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -101,14 +99,6 @@ pub struct ReplayResult {
     pub status: u16,
     pub ok: bool,
     pub response_excerpt: String,
-}
-
-#[derive(Debug, Deserialize)]
-struct VerifyResponse {
-    valid: bool,
-    reason: String,
-    #[serde(default)]
-    expires_at: Option<String>,
 }
 
 pub fn default_config(encrypted: bool, mut body: Vec<String>, mut headers: Vec<String>) -> Config {
@@ -430,56 +420,6 @@ pub fn validate_loopback(destination: &str) -> Result<()> {
         bail!("refusing non-loopback destination `{host}`; replay only to localhost");
     }
     Ok(())
-}
-
-pub fn activate_license(vault: &Path, config: &mut Config, token: &str) -> Result<LicenseCache> {
-    if token.trim().is_empty() {
-        bail!("license token cannot be empty");
-    }
-    let verdict = verify_token(token.trim())?;
-    let cache = LicenseCache {
-        token: token.trim().to_string(),
-        valid: verdict.valid,
-        reason: verdict.reason,
-        checked_at: now(),
-        expires_at: verdict.expires_at,
-    };
-    config.license = Some(cache.clone());
-    save_config(vault, config)?;
-    Ok(cache)
-}
-
-pub fn ensure_pro(vault: &Path, config: &mut Config) -> Result<()> {
-    let Some(cache) = config.license.clone() else {
-        bail!("Pro license required; buy or restore one from the Version Replay product site");
-    };
-    if cache.valid && now().saturating_sub(cache.checked_at) < 86_400 {
-        return Ok(());
-    }
-    match activate_license(vault, config, &cache.token) {
-        Ok(current) if current.valid => Ok(()),
-        Ok(current) => bail!("license no longer active ({})", current.reason),
-        Err(error) if cache.valid => {
-            eprintln!("warning: license verification is offline; using the last valid verdict");
-            let _ = error;
-            Ok(())
-        }
-        Err(error) => Err(error),
-    }
-}
-
-fn verify_token(token: &str) -> Result<VerifyResponse> {
-    let base = env::var(BILLING_BASE_ENV).unwrap_or_else(|_| "https://api.sociobot.in".to_string());
-    let mut url = Url::parse(&format!(
-        "{}/api/v1/products/{PRODUCT_SLUG}/verify",
-        base.trim_end_matches('/')
-    ))?;
-    url.query_pairs_mut().append_pair("license", token);
-    let response = ureq::get(url.as_str())
-        .timeout(std::time::Duration::from_secs(8))
-        .call()
-        .map_err(|error| anyhow!("could not verify license: {error}"))?;
-    response.into_json().context("parse license verdict")
 }
 
 fn validate_label(label: &str, value: &str) -> Result<()> {

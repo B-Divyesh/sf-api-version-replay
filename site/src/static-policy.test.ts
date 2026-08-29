@@ -21,7 +21,9 @@ describe("Azure Static Web Apps response policy", () => {
     });
     expect(policy.globalHeaders["Content-Security-Policy"]).toContain("default-src 'self'");
     expect(policy.globalHeaders["Content-Security-Policy"]).toContain("frame-ancestors 'none'");
-    expect(policy.globalHeaders["Content-Security-Policy"]).toContain("connect-src 'self' https://api.sociobot.in");
+    expect(policy.globalHeaders["Content-Security-Policy"]).toContain("connect-src 'self'");
+    expect(policy.globalHeaders["Content-Security-Policy"]).not.toContain("api.sociobot.in");
+    expect((policy as { responseOverrides?: Record<string, unknown> }).responseOverrides?.["404"]).toEqual({ rewrite: "/404.html" });
   });
 
   it("keeps immutable assets and the updateable worker on distinct cache policies", () => {

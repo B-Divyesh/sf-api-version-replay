@@ -1,11 +1,11 @@
-const CACHE = "version-replay-shell-v2";
-const SHELL = ["/", "/privacy/", "/terms/", "/version-specimen.webp"];
+const CACHE = "version-replay-shell-v3";
+const SHELL = ["/", "/?demo=1", "/privacy/", "/terms/", "/404.html", "/version-specimen.webp", "/favicon.svg"];
 
 async function cacheShell() {
   const cache = await caches.open(CACHE);
   await cache.addAll(SHELL);
   const documents = await Promise.all(
-    SHELL.slice(0, 3).map(async (path) => {
+    SHELL.slice(0, 5).map(async (path) => {
       const response = await cache.match(path);
       return response ? response.clone().text() : "";
     })
