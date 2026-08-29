@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { chromium } from "playwright";
 
 const claim = process.argv[2];
@@ -98,16 +99,31 @@ try {
       // @claim:route-metadata
       const context = await browser.newContext();
       const page = await context.newPage();
-      for (const [path, title, h1] of [["/", "Version Replay — Test webhook versions locally", "Test old webhook versions against localhost"], ["/?demo=1", "Demo — Version Replay", "Replay the complete CLI sample"], ["/privacy/", "Privacy — Version Replay", "Privacy"], ["/terms/", "Terms — Version Replay", "Terms"]]) {
+      const routes = [
+        ["/", "Version Replay — Test webhook versions locally", "Test old webhook versions against localhost", "https://api-version-replay.sociobot.in/", false],
+        ["/?demo=1", "Demo — Version Replay", "Replay the complete CLI sample", "https://api-version-replay.sociobot.in/?demo=1", false],
+        ["/privacy/", "Privacy — Version Replay", "Privacy", "https://api-version-replay.sociobot.in/privacy/", false],
+        ["/terms/", "Terms — Version Replay", "Terms", "https://api-version-replay.sociobot.in/terms/", false],
+        ["/404.html", "Page not found — Version Replay", "This page was not found", "https://api-version-replay.sociobot.in/404.html", true]
+      ];
+      for (const [path, title, h1, canonical, noindex] of routes) {
         await page.goto(`${origin}${path}`, { waitUntil: "networkidle" });
         assert(await page.title() === title, `${path} title mismatch`);
         assert(await page.locator("h1").count() === 1, `${path} needs one h1`);
         assert(await page.locator("h1").textContent() === h1, `${path} h1 mismatch`);
         assert(await page.locator('link[rel="canonical"]').count() === 1, `${path} canonical missing`);
+        assert(await page.locator('link[rel="canonical"]').getAttribute("href") === canonical, `${path} canonical mismatch`);
         assert(await page.locator('meta[property="og:image"]').count() === 1, `${path} OG image missing`);
         assert(await page.locator('meta[property="og:title"]').getAttribute("content") === title, `${path} OG title mismatch`);
         assert(await page.locator('meta[name="twitter:title"]').getAttribute("content") === title, `${path} Twitter title mismatch`);
+        assert(await page.locator('meta[name="twitter:description"]').count() === 1, `${path} Twitter description missing`);
+        assert(await page.locator('meta[name="twitter:image"]').getAttribute("content") === "https://api-version-replay.sociobot.in/social-card.jpg", `${path} Twitter image mismatch`);
+        const robotsMeta = page.locator('meta[name="robots"]');
+        const robots = await robotsMeta.count() ? await robotsMeta.getAttribute("content") : null;
+        assert(noindex ? robots?.includes("noindex") : !robots?.includes("noindex"), `${path} robots treatment mismatch`);
       }
+      const policy = JSON.parse(readFileSync("dist/site/staticwebapp.config.json", "utf8"));
+      assert(policy.responseOverrides?.["404"]?.rewrite === "/404.html", "host must rewrite missing routes to the designed 404");
       await context.close();
     } else throw new Error(`Unknown browser claim: ${claim}`);
   } finally { await browser.close(); }

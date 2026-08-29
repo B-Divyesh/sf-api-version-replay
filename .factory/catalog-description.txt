@@ -1,1 +1,1 @@
-Test saved webhook versions against localhost before upgrading a provider API.
+Test saved webhook versions against localhost before a provider API upgrade.

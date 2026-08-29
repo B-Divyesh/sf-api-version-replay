@@ -1,6 +1,6 @@
 # Copy audit
 
-Audited 2026-08-29 after perfection-loop round 3. Counts treat a hyphenated term as one word. No sentence exceeds 22 words. No supplied banned marketing word appears.
+Audited 2026-08-29 after perfection-loop round 4. Counts treat a hyphenated term as one word. No sentence exceeds 22 words. No supplied banned marketing word appears.
 
 ## Landing-page sentences
 
@@ -40,10 +40,13 @@ Audited 2026-08-29 after perfection-loop round 3. Counts treat a hyphenated term
 | 5 | Both webhook fixtures need JSON. | Pass |
 | 2 | Fixtures match. | Pass |
 | 8 | No type or value changes were found. | Pass |
+| 6 | The fixtures could not be compared. | Pass |
 | 2 | Comparison stopped. | Pass |
 | 6 | Check commas, quotes, and closing braces. | Pass |
 | 7 | Install command copied to the clipboard. | Pass |
+| 7 | Copy this command: `[install command]`. | Pass |
 | 6 | Demo — sample data, nothing is saved. | Pass |
+| 5 | Available after this page loads. | Pass |
 | 5 | Offline · sample still works. | Pass |
 
 ## Headings, labels, actions, and status fragments
@@ -56,13 +59,21 @@ The demo H1 is `Replay the complete CLI sample`. The terminal recording is comma
 
 `The command prints the temporary vault and report paths.` has nine words and is proved by `@claim:demo-output-paths`. `Install the CLI from this checkout:` is an instruction, not a build-artifact promise.
 
-The catalog sentence has 11 words, starts with `Test`, and is 78 characters: `Test saved webhook versions against localhost before upgrading a provider API.`
+The catalog sentence has 11 words, starts with `Test`, and is 76 characters: `Test saved webhook versions against localhost before a provider API upgrade.`
 
 ## Round 3 legal copy
 
 The unsupported `no account system` clause was removed. `The project has no telemetry client.` has six words and maps to `@claim:no-telemetry`.
 
 The unsupported retention adjective was removed. `The hosting provider may process request and security logs under its own retention policy.` has 13 words and makes no product-controlled retention promise.
+
+## Round 4 checks
+
+The untestable Terms promise about future publication was removed with its empty `Changes` section. No new visitor-facing claim replaced it.
+
+The landing order is now first screen, product facts, recorded CLI result, and then the three-step explanation. The wording and concrete/moss identity are unchanged.
+
+The 404 metadata repeats existing factual route copy. `The requested Version Replay page was not found.` has eight words and describes the current response only.
 
 ## Terminology
 

@@ -49,6 +49,9 @@ function renderDiff(focusResult = false): void {
         summary.append(headline, count);
         const wrapper = document.createElement("div");
         wrapper.className = "result-table-wrap";
+        wrapper.tabIndex = 0;
+        wrapper.setAttribute("role", "region");
+        wrapper.setAttribute("aria-label", "Contract changes table. Scroll horizontally for all columns.");
         const table = document.createElement("table");
         table.className = "result-table";
         table.innerHTML = "<thead><tr><th>Layer</th><th>Change</th><th>Path</th><th>Before</th><th>After</th></tr></thead>";
@@ -133,7 +136,18 @@ function focusHeading(target: HTMLElement): void {
   if (!heading) return;
   heading.tabIndex = -1;
   heading.focus({ preventScroll: true });
-  document.querySelector<HTMLElement>(".route-status")!.textContent = heading.textContent ?? "Page section changed";
+  const status = document.querySelector<HTMLElement>(".route-status")!;
+  status.textContent = "";
+  requestAnimationFrame(() => {
+    status.textContent = heading.textContent ?? "Page section changed";
+  });
+}
+
+function focusCurrentHeading(): void {
+  const target = location.hash
+    ? document.querySelector<HTMLElement>(location.hash)
+    : document.querySelector<HTMLElement>("main h1");
+  if (target) focusHeading(target);
 }
 
 history.scrollRestoration = "manual";
@@ -157,6 +171,8 @@ addEventListener("popstate", (event) => {
   const target = location.hash ? document.querySelector<HTMLElement>(location.hash) : byId("hero-title");
   if (target) focusHeading(target);
 });
+
+addEventListener("pageshow", () => requestAnimationFrame(focusCurrentHeading));
 
 if (isDemo) {
   document.body.classList.add("demo-mode");

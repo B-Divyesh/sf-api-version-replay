@@ -63,4 +63,21 @@ describe("Azure Static Web Apps response policy", () => {
       );
     }
   });
+
+  it("shows the recorded product result before the workflow explanation", () => {
+    const home = readFileSync(resolve(root, "site/index.html"), "utf8");
+    const facts = home.indexOf('class="proof-strip"');
+    const preview = home.indexOf('id="cli-demo"');
+    const workflow = home.indexOf('id="workflow"');
+
+    expect(facts).toBeGreaterThan(-1);
+    expect(preview).toBeGreaterThan(facts);
+    expect(workflow).toBeGreaterThan(preview);
+  });
+
+  it("keeps the terms free of an untestable future-publication promise", () => {
+    const terms = readFileSync(resolve(root, "site/terms/index.html"), "utf8");
+    expect(terms).not.toContain("Material changes");
+    expect(terms).not.toContain("<h2>Changes</h2>");
+  });
 });

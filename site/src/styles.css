@@ -515,6 +515,12 @@ h3 {
   font: 14px/1.7 var(--font-mono);
 }
 
+.terminal-recording pre:focus-visible,
+.result-table-wrap:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -6px;
+}
+
 .terminal-recording figcaption {
   padding: 12px 24px;
   border-top: 1px solid #71786b;

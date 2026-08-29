@@ -52,6 +52,17 @@
         <p><strong>Loopback replay</strong><span>Public destinations are rejected.</span></p>
       </section>
 
+      <section class="terminal-demo section-pad" id="cli-demo" aria-labelledby="terminal-title">
+        <div class="report-copy"><p class="eyebrow">RECORDED CLI DEMO</p><h2 id="terminal-title">Replay the complete CLI sample</h2><p><code>vr demo</code> creates a new temporary vault and leaves its report there for inspection.</p></div>
+        <figure class="terminal-recording" aria-label="Completed Version Replay CLI sample"><pre tabindex="0" aria-label="Completed Version Replay CLI output. Scroll horizontally for full lines."><code>$ vr demo
+Version Replay sample
+Imported 2 redacted fixtures into /tmp/version-replay-demo-…/vault
+Compared 2024-04-10 → 2025-02-24: 5 contract changes
+Replayed 2024-04-10 → HTTP 204
+Replayed 2025-02-24 → HTTP 204
+Wrote Markdown report to /tmp/version-replay-demo-…/version-replay-report.md</code></pre><figcaption>Recorded from the bundled payment webhook fixtures.</figcaption></figure>
+      </section>
+
       <section class="workflow section-pad" id="workflow" aria-labelledby="workflow-title">
         <div class="section-heading"><p class="eyebrow">HOW VERSION REPLAY WORKS</p><h2 id="workflow-title">Save, compare, then replay</h2><p>Use a saved webhook fixture for each provider version.</p></div>
         <ol class="steps">
@@ -84,17 +95,6 @@
         <p class="sr-only" id="fixture-help">Edit either sample webhook fixture, then compare them. Sample contents are not sent to a server.</p>
         <div class="bench-controls"><button class="primary-button" id="compare-button" type="button">Compare sample fixtures <span aria-hidden="true">→</span></button><button class="quiet-button" id="reset-button" type="button">Reset sample fixtures</button><p>The browser sample compares JSON. Run the CLI demo for import and replay.</p></div>
         <div class="result-panel" id="result-panel" aria-live="polite" aria-busy="false"><div class="empty-result"><span aria-hidden="true">↳</span><p><strong>No comparison yet.</strong> Compare the fixtures to list type and value changes.</p></div></div>
-      </section>
-
-      <section class="terminal-demo section-pad" id="cli-demo" aria-labelledby="terminal-title">
-        <div class="report-copy"><p class="eyebrow">RECORDED CLI DEMO</p><h2 id="terminal-title">Replay the complete CLI sample</h2><p><code>vr demo</code> creates a new temporary vault and leaves its report there for inspection.</p></div>
-        <figure class="terminal-recording" aria-label="Completed Version Replay CLI sample"><pre><code>$ vr demo
-Version Replay sample
-Imported 2 redacted fixtures into /tmp/version-replay-demo-…/vault
-Compared 2024-04-10 → 2025-02-24: 5 contract changes
-Replayed 2024-04-10 → HTTP 204
-Replayed 2025-02-24 → HTTP 204
-Wrote Markdown report to /tmp/version-replay-demo-…/version-replay-report.md</code></pre><figcaption>Recorded from the bundled payment webhook fixtures.</figcaption></figure>
       </section>
 
       <section class="report-preview section-pad" aria-labelledby="report-title">

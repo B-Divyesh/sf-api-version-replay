@@ -14,8 +14,16 @@ try { const stored = localStorage.getItem("vr_theme"); if (stored === "light" ||
 setTheme(theme, false);
 themeButton.addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 
-const heading = document.querySelector<HTMLElement>("main h1");
-if (heading) requestAnimationFrame(() => {
-  heading.focus();
-  document.querySelector<HTMLElement>(".route-status")!.textContent = heading.textContent ?? "Page loaded";
-});
+function focusPageHeading(): void {
+  const heading = document.querySelector<HTMLElement>("main h1");
+  if (!heading) return;
+  heading.tabIndex = -1;
+  heading.focus({ preventScroll: true });
+  const status = document.querySelector<HTMLElement>(".route-status")!;
+  status.textContent = "";
+  requestAnimationFrame(() => {
+    status.textContent = heading.textContent ?? "Page loaded";
+  });
+}
+
+addEventListener("pageshow", () => requestAnimationFrame(focusPageHeading));
