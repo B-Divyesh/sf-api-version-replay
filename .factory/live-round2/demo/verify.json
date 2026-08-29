@@ -1,0 +1,14 @@
+{
+  "url": "https://api-version-replay.sociobot.in/?demo=1",
+  "loadMs": 762,
+  "errors": [],
+  "a11y": {
+    "title": "Demo — Version Replay",
+    "lang": "en",
+    "h1": 1,
+    "main": true,
+    "imgsMissingAlt": 0,
+    "buttonsUnlabeled": 0,
+    "textLength": 2139
+  }
+}
