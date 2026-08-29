@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="theme-color" content="#171a16" />
+  <meta name="description" content="How Version Replay stores fixtures and limits network access." /><link rel="canonical" href="https://api-version-replay.sociobot.in/privacy/" />
+  <meta property="og:type" content="website" /><meta property="og:title" content="Privacy — Version Replay" /><meta property="og:description" content="How Version Replay stores fixtures and limits network access." /><meta property="og:image" content="https://api-version-replay.sociobot.in/social-card.jpg" />
+  <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="Privacy — Version Replay" /><meta name="twitter:description" content="How Version Replay stores fixtures and limits network access." /><meta name="twitter:image" content="https://api-version-replay.sociobot.in/social-card.jpg" />
+  <title>Privacy — Version Replay</title><link rel="icon" href="/favicon.svg" type="image/svg+xml" /><link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <script type="module" crossorigin src="/assets/styles-C0Cmzr_1.js"></script>
+  <script type="module" crossorigin src="/assets/page-BWAkJD3f.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/styles-CNKGOaSu.css">
+</head><body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header"><a class="brand" href="/" aria-label="Version Replay home"><span class="brand-mark" aria-hidden="true">VR↲</span><span>Version Replay</span></a><nav aria-label="Primary navigation"><a href="/?demo=1">Demo</a><a href="/#workflow">How it works</a><a href="/privacy/" aria-current="page">Privacy</a></nav><button class="theme-toggle" type="button" aria-pressed="false" aria-label="Use dark theme"><span aria-hidden="true">◐</span><span class="theme-label">Dark</span></button></header>
+  <div class="route-status sr-only" aria-live="polite"></div>
+  <main class="legal-main" id="main"><p class="eyebrow">PRIVACY POLICY</p><h1 tabindex="-1">Privacy</h1><p class="updated">Effective August 29, 2026</p>
+    <p>Version Replay stores imported and captured webhook fixtures in the vault directory you choose.</p>
+    <h2>CLI data</h2><p>Configured headers and body fields are redacted before a fixture is written. Encrypted vaults protect fixture contents with AES-256-GCM and a key derived through Argon2id. The passphrase remains in your environment and is not written to the vault.</p>
+    <h2>Network access</h2><p>Replay accepts loopback destinations only. Other CLI commands do not upload fixture contents. The project has no telemetry client.</p>
+    <h2>Browser sample</h2><p>The sample comparison runs in this page. It does not send fixture contents to a server. Demo mode does not read or write browser storage.</p>
+    <h2>Website records</h2><p>The website saves a theme choice outside demo mode. It uses no advertising cookies or behavioral analytics. The hosting provider may process request and security logs under its own retention policy.</p>
+    <h2>Your control</h2><p>Delete a vault by removing its directory. Clear this site’s storage in your browser to remove the theme choice.</p>
+    <h2>Contact</h2><p>Use the security guidance in the <a href="https://github.com/B-Divyesh/sf-api-version-replay">Version Replay repository on GitHub</a>. Do not include real webhook data.</p>
+  </main>
+  <footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">VR↲</span><span>Version Replay</span></a><p>Compare and replay saved webhook versions on your machine.<br />Built by Param Factory · Version 0.1.0</p><nav aria-label="Legal and project links"><a href="/privacy/" aria-current="page">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-api-version-replay">Source on GitHub</a></nav></footer>
+</body></html>
