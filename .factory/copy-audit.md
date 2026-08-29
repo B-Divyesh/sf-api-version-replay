@@ -1,6 +1,6 @@
 # Copy audit
 
-Audited 2026-08-29. Counts treat a hyphenated term as one word. No sentence exceeds 22 words. No supplied banned marketing word appears.
+Audited 2026-08-29 after perfection-loop round 3. Counts treat a hyphenated term as one word. No sentence exceeds 22 words. No supplied banned marketing word appears.
 
 ## Landing-page sentences
 
@@ -56,7 +56,13 @@ The demo H1 is `Replay the complete CLI sample`. The terminal recording is comma
 
 `The command prints the temporary vault and report paths.` has nine words and is proved by `@claim:demo-output-paths`. `Install the CLI from this checkout:` is an instruction, not a build-artifact promise.
 
-The catalog sentence has 14 words, starts with `Compare`, and is 91 characters: `Compare saved webhook versions and replay each contract against localhost before an API upgrade.`
+The catalog sentence has 11 words, starts with `Test`, and is 78 characters: `Test saved webhook versions against localhost before upgrading a provider API.`
+
+## Round 3 legal copy
+
+The unsupported `no account system` clause was removed. `The project has no telemetry client.` has six words and maps to `@claim:no-telemetry`.
+
+The unsupported retention adjective was removed. `The hosting provider may process request and security logs under its own retention policy.` has 13 words and makes no product-controlled retention promise.
 
 ## Terminology
 

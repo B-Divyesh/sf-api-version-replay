@@ -110,11 +110,38 @@ async function runRouting(browser) {
   await context.close();
 }
 
+async function runExternalFragments(browser) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  const source = await context.newPage();
+  await source.goto(url, { waitUntil: "networkidle" });
+  const links = await source.locator('a[href^="https://"][href*="#"]').evaluateAll((anchors) =>
+    [...new Set(anchors.map((anchor) => anchor.href))]
+  );
+  assert(links.length > 0, "expected at least one external fragment link");
+
+  for (const href of links) {
+    const target = await context.newPage();
+    await target.goto(href, { waitUntil: "domcontentloaded" });
+    const hash = new URL(href).hash;
+    await target.waitForFunction((fragment) => {
+      const id = decodeURIComponent(fragment.slice(1));
+      return Boolean(
+        document.getElementById(id) ||
+        document.getElementById(`user-content-${id}`) ||
+        [...document.querySelectorAll("a[href]")].some((anchor) => anchor.getAttribute("href") === fragment)
+      );
+    }, hash);
+    await target.close();
+  }
+  await context.close();
+}
+
 const browser = await chromium.launch();
 try {
   const desktop = await runDesktop(browser);
   await runMobile(browser);
   await runRouting(browser);
+  await runExternalFragments(browser);
   console.log(JSON.stringify({ url, desktop, mobile: "390px no-overflow", result: "passed" }));
 } finally {
   await browser.close();
